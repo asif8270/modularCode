@@ -9,8 +9,6 @@ void setup()
 {
   Serial.begin(9600);
   _mq2->checkCalibratedValue();
-  // _mq2 = new mq2();
-  // float rs = _mq2->MQRead(MQ_PIN);
 }
 
 void loop()

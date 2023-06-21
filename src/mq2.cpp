@@ -63,7 +63,7 @@ void mq2::calibrateMQ2()
 
 float mq2::MQResistanceCalculation(int raw_adc)
 {
-    return (((float)RL_VALUE * (1023 - raw_adc) / raw_adc));
+    return (((float)RL_VALUE * (4096 - raw_adc) / raw_adc));
 }
 
 float mq2::MQCalibration(int mq_pin)
