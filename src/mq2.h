@@ -27,7 +27,7 @@
 
 class mq2
 {
-public:
+private:
     float LPGCurve[3] = {2.3, 0.21, -0.47};   // two points are taken from the curve.
                                               // with these two points, a line is formed which is "approximately equivalent"
                                               // to the original curve.
@@ -41,7 +41,7 @@ public:
                                               // to the original curve.
                                               // data format:{ x, y, slope}; point1: (lg200, 0.53), point2: (lg10000,  -0.22)
     float Ro = 10;                            // Ro is initialized to 10 kilo ohms
-
+public:
     float MQCalibration(int mq_pin);
     float MQRead(int mq_pin);
     float MQGetGasPercentage(float rs_ro_ratio, int gas_id);
