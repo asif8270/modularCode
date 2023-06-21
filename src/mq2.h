@@ -22,25 +22,16 @@
 #define GAS_CO (1)
 #define GAS_SMOKE (2)
 
-#define CALIBRATION_ADDRESS 0      // EEPROM address for storing the calibrated value
-#define CALIBRATION_FLAG_ADDRESS 1 // EEPROM address for storing the calibration flag
+#define CALIBRATION_ADDRESS 8      // EEPROM address for storing the calibrated value
+#define CALIBRATION_FLAG_ADDRESS 9 // EEPROM address for storing the calibration flag
 
 class mq2
 {
 private:
-    float LPGCurve[3] = {2.3, 0.21, -0.47};   // two points are taken from the curve.
-                                              // with these two points, a line is formed which is "approximately equivalent"
-                                              // to the original curve.
-                                              // data format:{ x, y, slope}; point1: (lg200, 0.21), point2: (lg10000, -0.59)
-    float COCurve[3] = {2.3, 0.72, -0.34};    // two points are taken from the curve.
-                                              // with these two points, a line is formed which is "approximately equivalent"
-                                              // to the original curve.
-                                              // data format:{ x, y, slope}; point1: (lg200, 0.72), point2: (lg10000,  0.15)
-    float SmokeCurve[3] = {2.3, 0.53, -0.44}; // two points are taken from the curve.
-                                              // with these two points, a line is formed which is "approximately equivalent"
-                                              // to the original curve.
-                                              // data format:{ x, y, slope}; point1: (lg200, 0.53), point2: (lg10000,  -0.22)
-    float Ro = 10;                            // Ro is initialized to 10 kilo ohms
+    float LPGCurve[3] = {2.3, 0.21, -0.47};
+    float COCurve[3] = {2.3, 0.72, -0.34};
+    float SmokeCurve[3] = {2.3, 0.53, -0.44};
+    float Ro = 10; // Ro is initialized to 10 kilo ohms
 public:
     float MQCalibration(int mq_pin);
     float MQRead(int mq_pin);
@@ -50,6 +41,14 @@ public:
     void calibrateMQ2();
     void checkCalibratedValue();
     void readCalibratedValue();
+    // mq2();
+    // ~mq2();
 };
-
+// mq2::mq2()
+// {
+//     EEPROM.begin(512);
+// }
+// mq2::~mq2()
+// {
+// }
 #endif

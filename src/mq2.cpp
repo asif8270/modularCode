@@ -2,43 +2,36 @@
 #include "mq2.h"
 #include <EEPROM.h>
 
-// Check if calibration has been performed
-
+// Check if calibration has been performeds
 void mq2::checkCalibratedValue()
 {
     // Read the calibration flag from EEPROM
-    byte calibrationFlag = EEPROM.read(CALIBRATION_FLAG_ADDRESS);
 
-    if (calibrationFlag != 1)
+    if (EEPROM.read(9) != 1)
     {
         // Calibration has not been performed or manual recalibration requested
         calibrateMQ2();
-    }
-
-    else
-    {
-        // Calibration has been performed, read the calibrated value from EEPROM
-        readCalibratedValue();
     }
 }
 
 void mq2::readCalibratedValue()
 {
-    float calibratedRo;
-    float calibratedValue = EEPROM.get(CALIBRATION_ADDRESS, calibratedRo);
+    Serial.print("\nEEPROM Ro: ");
+    Serial.print(EEPROM.read(8));
+    Serial.print(" kOhm");
+    Serial.print("\n");
     Serial.print("LPG:");
-    Serial.print(MQGetGasPercentage(MQRead(MQ_PIN) / Ro, GAS_LPG), 2);
+    Serial.print(MQGetGasPercentage(MQRead(MQ_PIN) / EEPROM.read(8), GAS_LPG));
     Serial.print("ppm");
     Serial.print("    ");
     Serial.print("CO:");
-    Serial.print(MQGetGasPercentage(MQRead(MQ_PIN) / Ro, GAS_CO), 2);
+    Serial.print(MQGetGasPercentage(MQRead(MQ_PIN) / EEPROM.read(8), GAS_CO));
     Serial.print("ppm");
     Serial.print("    ");
     Serial.print("SMOKE:");
-    Serial.print(MQGetGasPercentage(MQRead(MQ_PIN) / Ro, GAS_SMOKE), 2);
+    Serial.print(MQGetGasPercentage(MQRead(MQ_PIN) / EEPROM.read(8), GAS_SMOKE));
     Serial.print("ppm");
     Serial.print("\n");
-    // return calibratedValue;
 }
 
 void mq2::calibrateMQ2()
@@ -46,19 +39,15 @@ void mq2::calibrateMQ2()
     pinMode(34, INPUT);
     // Calibrating the MQ2 sensor
     Serial.print("\nCalibrating...");
-    // Store the calibrated value in a variable, let's say 'calibratedValue'
-    float calibratedRo = MQCalibration(MQ_PIN);
+    float calibratedRo = MQCalibration(MQ_PIN); // Storing the calibrated Ro
     Serial.print("Calibration is done...\n");
     Serial.print("Calibirated Ro = ");
     Serial.print(calibratedRo);
     Serial.print("kohm");
     Serial.print("\n");
-    // Save the calibrated Ro to EEPROM
-    EEPROM.put(CALIBRATION_ADDRESS, calibratedRo);
-
-    // Set the calibration flag to indicate that calibration has been performed
-    EEPROM.write(CALIBRATION_FLAG_ADDRESS, 1);
-    // return calibratedRo;
+    EEPROM.write(8, calibratedRo); // Saving the calibrated Ro to EEPROM
+    EEPROM.write(9, 1);            // Set the calibration flag to indicate that calibration has been performed
+    EEPROM.commit();               // Commit changes to EEPROM
 }
 
 float mq2::MQResistanceCalculation(int raw_adc)
@@ -71,7 +60,8 @@ float mq2::MQCalibration(int mq_pin)
     int i;
     float val = 0;
     for (i = 0; i < CALIBARAION_SAMPLE_TIMES; i++)
-    { // take multiple samples
+    {
+        // take multiple samples
         val += MQResistanceCalculation(analogRead(mq_pin));
         delay(CALIBRATION_SAMPLE_INTERVAL);
     }
